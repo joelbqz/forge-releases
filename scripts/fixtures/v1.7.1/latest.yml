@@ -1,0 +1,8 @@
+version: 1.7.1
+files:
+  - url: Forge-1.7.1-x64-setup.exe
+    sha512: hqWsalKhbQPbcnYCUDeCIDPJ0T0Qpamuw0B3CFJQTA4B8zyH/aHgNc5j6ZB/VFcONEVkY05fNykm1w62TNKlfQ==
+    size: 139247256
+path: Forge-1.7.1-x64-setup.exe
+sha512: hqWsalKhbQPbcnYCUDeCIDPJ0T0Qpamuw0B3CFJQTA4B8zyH/aHgNc5j6ZB/VFcONEVkY05fNykm1w62TNKlfQ==
+releaseDate: '2026-11-09T14:09:38.103Z'
