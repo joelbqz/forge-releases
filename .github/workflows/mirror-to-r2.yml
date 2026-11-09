@@ -1,0 +1,66 @@
+# Copies a published release to the forge-downloads R2 bucket, served at
+# https://downloads.ui8.ai, where the download buttons on ui8.ai/forge send
+# visitors (GitHub's release downloads time out for signed-out visitors
+# during GitHub incidents). All the logic is in scripts/mirror-release.mjs;
+# see the README.
+#
+# Runs when a release is published (never for a draft), and by hand or from
+# the source repo's scripts/distribute-win.mjs, which attaches the Windows
+# build to a release that may already be published (uploading assets fires
+# no release event):
+#   gh workflow run mirror-to-r2.yml -R joelbqz/forge-releases -f tag=v1.7.1
+# Re-running for the same tag is safe.
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   R2_ACCOUNT_ID            Cloudflare account id that owns the bucket
+#   R2_ACCESS_KEY_ID         R2 API token (Object Read & Write, this bucket)
+#   R2_SECRET_ACCESS_KEY     its secret
+#   CLOUDFLARE_ZONE_ID       the ui8.ai zone
+#   CLOUDFLARE_PURGE_TOKEN   API token with Zone → Cache Purge on ui8.ai
+name: Mirror release to R2
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to mirror, e.g. v1.7.1
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# One mirror at a time: two runs must not move the latest/ files at once.
+concurrency:
+  group: mirror-to-r2
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      # the current mirror code, not the tree the release's tag points at
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Test the feed rewriting
+        run: node --test scripts/feed.test.mjs
+
+      - name: Mirror
+        env:
+          # from the event or the input, never interpolated into the script
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_REPO: ${{ github.repository }}
+          R2_BUCKET: forge-downloads
+          PUBLIC_ORIGIN: https://downloads.ui8.ai
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
+        run: node scripts/mirror-release.mjs "$TAG"

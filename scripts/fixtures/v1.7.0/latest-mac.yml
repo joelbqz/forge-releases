@@ -1,0 +1,11 @@
+version: 1.7.0
+files:
+  - url: Forge-1.7.0-arm64-mac.zip
+    sha512: ulS5nY9a/iUl/vRanW5083pFLoXlzdbJmTWsxNd6Vi3GpLcKtmM/DktMlICeXFgCaO5QClvG4pCmqZqh3ZWO9Q==
+    size: 187753228
+  - url: Forge-1.7.0-arm64.dmg
+    sha512: +zclZ9kum6NGHIuNHM2BaDa2ibYLOUAMz0cLeLEDdeoF2nzJpdS1hm0XeBm31Epbpfn85UPj+PbWpd/DDalqVg==
+    size: 182661407
+path: Forge-1.7.0-arm64-mac.zip
+sha512: ulS5nY9a/iUl/vRanW5083pFLoXlzdbJmTWsxNd6Vi3GpLcKtmM/DktMlICeXFgCaO5QClvG4pCmqZqh3ZWO9Q==
+releaseDate: '2026-11-08T04:39:16.098Z'
